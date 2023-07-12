@@ -1,6 +1,8 @@
 package game
 
 import (
+	"container/list"
+
 	"github.com/timothy-ch-cheung/go-game-tween/assets"
 	"github.com/timothy-ch-cheung/go-game-tween/config"
 
@@ -10,32 +12,43 @@ import (
 )
 
 type GameMap struct {
-	sprite *ebiten.Image
+	initialX      float64
+	initialY      float64
+	markers       *list.List
+	CurrentMarker *list.Element
 }
 
-func (gameMap *GameMap) Width() int {
-	return gameMap.sprite.Bounds().Dx()
-}
-
-func (gameMap *GameMap) Height() int {
-	return gameMap.sprite.Bounds().Dy()
-}
-
-func (gameMap *GameMap) Draw(screen *ebiten.Image, cam *ebitenCamera.Camera) {
+func (gameMap *GameMap) Draw(screen *ebiten.Image, cam *ebitenCamera.Camera, loader *resource.Loader) {
 	op := &ebiten.DrawImageOptions{}
-	cam.Surface.DrawImage(gameMap.sprite, cam.GetTranslation(op, 0, 0))
+	cam.Surface.DrawImage(loader.LoadImage(assets.ImgMap).Data, cam.GetTranslation(op, 0, 0))
+
+	for marker := gameMap.markers.Front(); marker != nil; marker = marker.Next() {
+		marker.Value.(*Marker).Draw(screen, cam, loader)
+	}
 }
 
 func (gameMap *GameMap) GetInitialPos() (float64, float64) {
-	intialX := float64(gameMap.sprite.Bounds().Dx()) - config.ScreenWidth/2
-	intialY := float64(gameMap.sprite.Bounds().Dy()) - config.ScreenHeight/2
-	return intialX, intialY
+	return gameMap.initialX, gameMap.initialY
 }
 
 func NewGameMap(loader resource.Loader) *GameMap {
 	sprite := loader.LoadImage(assets.ImgMap).Data
+	initialX := float64(sprite.Bounds().Dx()) - config.ScreenWidth/2
+	initialY := float64(sprite.Bounds().Dy()) - config.ScreenHeight/2
+
+	markers := list.New()
+	markers.PushBack(newMarker(420, 420, Selected))
+	markers.PushBack(newMarker(400, 415, Locked))
+	markers.PushBack(newMarker(375, 425, Locked))
+	markers.PushBack(newMarker(340, 405, Locked))
+	markers.PushBack(newMarker(320, 380, Locked))
+	markers.PushBack(newMarker(330, 350, Locked))
+	markers.PushBack(newMarker(300, 300, Locked))
 
 	return &GameMap{
-		sprite: sprite,
+		initialX:      initialX,
+		initialY:      initialY,
+		markers:       markers,
+		CurrentMarker: markers.Front(),
 	}
 }

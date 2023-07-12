@@ -25,7 +25,7 @@ func (g *Game) Update() error {
 }
 
 func (game *Game) Draw(screen *ebiten.Image) {
-	game.gameMap.Draw(screen, game.cam)
+	game.gameMap.Draw(screen, game.cam, game.loader)
 	game.cam.Blit(screen)
 }
 
