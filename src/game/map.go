@@ -5,13 +5,12 @@ import (
 	"github.com/timothy-ch-cheung/go-game-tween/config"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	ebitenCamera "github.com/melonfunction/ebiten-camera"
 	resource "github.com/quasilyte/ebitengine-resource"
 )
 
 type GameMap struct {
 	sprite *ebiten.Image
-	posX   int
-	posY   int
 }
 
 func (gameMap *GameMap) Width() int {
@@ -22,19 +21,21 @@ func (gameMap *GameMap) Height() int {
 	return gameMap.sprite.Bounds().Dy()
 }
 
-func (gameMap *GameMap) Draw(screen *ebiten.Image) {
+func (gameMap *GameMap) Draw(screen *ebiten.Image, cam *ebitenCamera.Camera) {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(gameMap.posX), float64(gameMap.posY))
-	screen.DrawImage(gameMap.sprite, op)
+	cam.Surface.DrawImage(gameMap.sprite, cam.GetTranslation(op, 0, 0))
+}
+
+func (gameMap *GameMap) GetInitialPos() (float64, float64) {
+	intialX := float64(gameMap.sprite.Bounds().Dx()) - config.ScreenWidth/2
+	intialY := float64(gameMap.sprite.Bounds().Dy()) - config.ScreenHeight/2
+	return intialX, intialY
 }
 
 func NewGameMap(loader resource.Loader) *GameMap {
 	sprite := loader.LoadImage(assets.ImgMap).Data
-	intialX := -float64(sprite.Bounds().Dx()) + config.ScreenWidth
-	intialY := -float64(sprite.Bounds().Dy()) + config.ScreenHeight
+
 	return &GameMap{
 		sprite: sprite,
-		posX:   int(intialX),
-		posY:   int(intialY),
 	}
 }

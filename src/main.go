@@ -9,12 +9,15 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
+
+	ebitenCamera "github.com/melonfunction/ebiten-camera"
 	resource "github.com/quasilyte/ebitengine-resource"
 )
 
 type Game struct {
 	loader  *resource.Loader
 	gameMap *game.GameMap
+	cam     *ebitenCamera.Camera
 }
 
 func (g *Game) Update() error {
@@ -22,7 +25,8 @@ func (g *Game) Update() error {
 }
 
 func (game *Game) Draw(screen *ebiten.Image) {
-	game.gameMap.Draw(screen)
+	game.gameMap.Draw(screen, game.cam)
+	game.cam.Blit(screen)
 }
 
 func (game *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -36,11 +40,14 @@ func main() {
 
 	assets.RegisterImageResources(loader)
 
+	cam := ebitenCamera.NewCamera(config.ScreenWidth, config.ScreenHeight, 0, 0, 0, 1)
+
 	gameMap := game.NewGameMap(*loader)
+	cam.SetPosition(gameMap.GetInitialPos())
 
 	ebiten.SetWindowSize(config.ScreenWidth*4, config.ScreenHeight*4)
 	ebiten.SetWindowTitle("Map Tween Demo")
-	if err := ebiten.RunGame(&Game{loader: loader, gameMap: gameMap}); err != nil {
+	if err := ebiten.RunGame(&Game{loader: loader, gameMap: gameMap, cam: cam}); err != nil {
 		log.Fatal(err)
 	}
 }
