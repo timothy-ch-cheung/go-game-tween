@@ -15,6 +15,10 @@ import (
 	resource "github.com/quasilyte/ebitengine-resource"
 )
 
+const (
+	scale = 4
+)
+
 type Game struct {
 	loader  *resource.Loader
 	gameMap *game.GameMap
@@ -47,14 +51,14 @@ func main() {
 	cam := ebitenCamera.NewCamera(config.ScreenWidth, config.ScreenHeight, 0, 0, 0, 1)
 
 	gameMap := game.NewGameMap(*loader)
-	cam.SetPosition(gameMap.GetInitialPos())
+	cam.SetPosition(gameMap.GetCameraPosition())
 
 	ui := game.CreateUI(loader, &game.Callbacks{
 		Prev: func() {},
 		Next: func() {},
 	})
 
-	ebiten.SetWindowSize(config.ScreenWidth*4, config.ScreenHeight*4)
+	ebiten.SetWindowSize(config.ScreenWidth*scale, config.ScreenHeight*scale)
 	ebiten.SetWindowTitle("Map Tween Demo")
 
 	game := &Game{
