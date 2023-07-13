@@ -56,3 +56,19 @@ func (gameMap *GameMap) GetDimensions() (float64, float64) {
 func (gameMap *GameMap) GetCurrentMarker() *Marker {
 	return gameMap.CurrentMarker.Value.(*Marker)
 }
+
+func (gameMap *GameMap) GetNextMarker() *Marker {
+	next := gameMap.CurrentMarker.Next()
+	if next == nil {
+		return nil
+	}
+	return next.Value.(*Marker)
+}
+
+func (gameMap *GameMap) GetPrevMarker() *Marker {
+	prev := gameMap.CurrentMarker.Prev()
+	if prev == nil {
+		return nil
+	}
+	return prev.Value.(*Marker)
+}

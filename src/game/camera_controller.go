@@ -5,7 +5,12 @@ import (
 
 	ebitenCamera "github.com/melonfunction/ebiten-camera"
 	"github.com/tanema/gween"
+	"github.com/tanema/gween/ease"
 	"github.com/timothy-ch-cheung/go-game-tween/config"
+)
+
+const (
+	moveTime = 500000
 )
 
 type cameraBounds struct {
@@ -17,11 +22,12 @@ type cameraBounds struct {
 
 type CameraController struct {
 	camera         *ebitenCamera.Camera
-	isCameraMoving bool
-	tween          gween.Tween
 	bounds         cameraBounds
-	posX           float64
-	posY           float64
+	IsCameraMoving bool
+	xTween         *gween.Tween
+	isFinishedX    bool
+	yTween         *gween.Tween
+	isFinishedY    bool
 }
 
 func NewCameraController(camera *ebitenCamera.Camera, mapWidth float64, mapHeight float64) *CameraController {
@@ -35,13 +41,47 @@ func NewCameraController(camera *ebitenCamera.Camera, mapWidth float64, mapHeigh
 	}
 
 	return &CameraController{
-		camera: camera,
-		bounds: bounds,
+		camera:         camera,
+		bounds:         bounds,
+		IsCameraMoving: false,
 	}
 }
 
+func (cameraController *CameraController) SetCameraPosition(marker *Marker) {
+	cameraController.camera.SetPosition(cameraController.GetCameraPosition(marker))
+}
+
 func (cameraController *CameraController) GetCameraPosition(marker *Marker) (float64, float64) {
-	x := math.Min(math.Max(float64(marker.posX), cameraController.bounds.xMin), cameraController.bounds.xMax)
-	y := math.Min(math.Max(float64(marker.posY), cameraController.bounds.yMin), cameraController.bounds.yMax)
+	x := math.Min(math.Max(float64(marker.PosX), cameraController.bounds.xMin), cameraController.bounds.xMax)
+	y := math.Min(math.Max(float64(marker.PosY), cameraController.bounds.yMin), cameraController.bounds.yMax)
 	return x, y
+}
+
+func (cameraController *CameraController) Update(delta float32) {
+	if cameraController.IsCameraMoving {
+		var newX, newY = cameraController.camera.X, cameraController.camera.Y
+		if !cameraController.isFinishedX {
+			x, isFinishedX := cameraController.xTween.Update(delta)
+			newX = float64(x)
+			cameraController.isFinishedX = isFinishedX
+		}
+		if !cameraController.isFinishedY {
+			y, isFinishedY := cameraController.yTween.Update(delta)
+			newY = float64(y)
+			cameraController.isFinishedY = isFinishedY
+		}
+
+		cameraController.camera.SetPosition(float64(newX), float64(newY))
+		if cameraController.isFinishedX && cameraController.isFinishedY {
+			cameraController.IsCameraMoving = false
+			cameraController.isFinishedX = false
+			cameraController.isFinishedY = false
+		}
+	}
+}
+
+func (cameraController *CameraController) InitiateMove(targetX float64, targetY float64) {
+	cameraController.IsCameraMoving = true
+	cameraController.xTween = gween.New(float32(cameraController.camera.X), float32(targetX), moveTime, ease.InOutCubic)
+	cameraController.yTween = gween.New(float32(cameraController.camera.Y), float32(targetY), moveTime, ease.InOutCubic)
 }

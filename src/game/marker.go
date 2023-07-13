@@ -17,15 +17,15 @@ const (
 )
 
 type Marker struct {
-	posX  int
-	posY  int
+	PosX  int
+	PosY  int
 	State MarkerState
 }
 
 func newMarker(x int, y int, state MarkerState) *Marker {
 	return &Marker{
-		posX:  x,
-		posY:  y,
+		PosX:  x,
+		PosY:  y,
 		State: state,
 	}
 }
@@ -45,5 +45,5 @@ func (marker *Marker) getSprite(loader *resource.Loader) *ebiten.Image {
 
 func (marker *Marker) Draw(screen *ebiten.Image, cam *ebitenCamera.Camera, loader *resource.Loader) {
 	op := &ebiten.DrawImageOptions{}
-	cam.Surface.DrawImage(marker.getSprite(loader), cam.GetTranslation(op, float64(marker.posX), float64(marker.posY)))
+	cam.Surface.DrawImage(marker.getSprite(loader), cam.GetTranslation(op, float64(marker.PosX), float64(marker.PosY)))
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/ebitenui/ebitenui"
 	"github.com/ebitenui/ebitenui/widget"
+	"github.com/hajimehoshi/ebiten/v2"
 
 	resource "github.com/quasilyte/ebitengine-resource"
 )
@@ -12,6 +13,13 @@ import (
 type Callbacks struct {
 	Next func(args *widget.ButtonClickedEventArgs)
 	Prev func(args *widget.ButtonClickedEventArgs)
+}
+
+type GameUI struct {
+	ui               *ebitenui.UI
+	interfaceEnabled bool
+	prevBtn          *widget.Button
+	nextBtn          *widget.Button
 }
 
 func createPrevBtnImg(loader *resource.Loader) *widget.ButtonImage {
@@ -32,7 +40,7 @@ func createNextBtnImg(loader *resource.Loader) *widget.ButtonImage {
 	}
 }
 
-func CreateUI(loader *resource.Loader, callbacks *Callbacks) *ebitenui.UI {
+func CreateUI(loader *resource.Loader, callbacks *Callbacks) *GameUI {
 	rootContainer := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewAnchorLayout(widget.AnchorLayoutOpts.Padding(widget.Insets{
 			Bottom: 5,
@@ -61,7 +69,31 @@ func CreateUI(loader *resource.Loader, callbacks *Callbacks) *ebitenui.UI {
 	)
 	btnContainer.AddChild(nextBtn)
 
-	return &ebitenui.UI{
+	ui := &ebitenui.UI{
 		Container: rootContainer,
 	}
+	return &GameUI{
+		ui:               ui,
+		interfaceEnabled: true,
+		prevBtn:          prevBtn,
+		nextBtn:          nextBtn,
+	}
+}
+
+func (gameUI *GameUI) Update() {
+	gameUI.ui.Update()
+}
+
+func (gameUI *GameUI) Draw(screen *ebiten.Image) {
+	gameUI.ui.Draw(screen)
+}
+
+func (gameUI *GameUI) IsInterfaceEnabled() bool {
+	return gameUI.interfaceEnabled
+}
+
+func (gameUI *GameUI) SetInterfaceEnabled(enabled bool) {
+	gameUI.interfaceEnabled = enabled
+	gameUI.prevBtn.GetWidget().Disabled = !enabled
+	gameUI.nextBtn.GetWidget().Disabled = !enabled
 }
