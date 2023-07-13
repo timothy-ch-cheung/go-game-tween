@@ -8,6 +8,7 @@ import (
 	"github.com/timothy-ch-cheung/go-game-tween/game"
 
 	"github.com/ebitenui/ebitenui"
+	"github.com/ebitenui/ebitenui/widget"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
 
@@ -51,11 +52,14 @@ func main() {
 	cam := ebitenCamera.NewCamera(config.ScreenWidth, config.ScreenHeight, 0, 0, 0, 1)
 
 	gameMap := game.NewGameMap(*loader)
-	cam.SetPosition(gameMap.GetCameraPosition())
+
+	width, height := gameMap.GetDimensions()
+	cameraController := game.NewCameraController(cam, width, height)
+	cam.SetPosition(cameraController.GetCameraPosition(gameMap.GetCurrentMarker()))
 
 	ui := game.CreateUI(loader, &game.Callbacks{
-		Prev: func() {},
-		Next: func() {},
+		Prev: func(args *widget.ButtonClickedEventArgs) {},
+		Next: func(args *widget.ButtonClickedEventArgs) {},
 	})
 
 	ebiten.SetWindowSize(config.ScreenWidth*scale, config.ScreenHeight*scale)

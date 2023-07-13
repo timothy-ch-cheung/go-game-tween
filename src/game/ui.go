@@ -10,8 +10,8 @@ import (
 )
 
 type Callbacks struct {
-	Next func()
-	Prev func()
+	Next func(args *widget.ButtonClickedEventArgs)
+	Prev func(args *widget.ButtonClickedEventArgs)
 }
 
 func createPrevBtnImg(loader *resource.Loader) *widget.ButtonImage {
@@ -50,13 +50,13 @@ func CreateUI(loader *resource.Loader, callbacks *Callbacks) *ebitenui.UI {
 	rootContainer.AddChild(btnContainer)
 	prevBtn := widget.NewButton(
 		widget.ButtonOpts.Image(createPrevBtnImg(loader)),
-		widget.ButtonOpts.ClickedHandler(func(args *widget.ButtonClickedEventArgs) { callbacks.Prev() }),
+		widget.ButtonOpts.ClickedHandler(callbacks.Prev),
 		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{Stretch: true, MaxHeight: 20})),
 	)
 	btnContainer.AddChild(prevBtn)
 	nextBtn := widget.NewButton(
 		widget.ButtonOpts.Image(createNextBtnImg(loader)),
-		widget.ButtonOpts.ClickedHandler(func(args *widget.ButtonClickedEventArgs) { callbacks.Next() }),
+		widget.ButtonOpts.ClickedHandler(callbacks.Next),
 		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{Stretch: true, MaxHeight: 20})),
 	)
 	btnContainer.AddChild(nextBtn)
