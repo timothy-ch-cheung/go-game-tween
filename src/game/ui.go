@@ -2,6 +2,7 @@ package game
 
 import (
 	"container/list"
+	"image/color"
 
 	"github.com/timothy-ch-cheung/go-game-tween/assets"
 
@@ -29,21 +30,24 @@ type GameUI struct {
 	buttons          *Buttons
 }
 
-func createPrevBtnImg(loader *resource.Loader) *widget.ButtonImage {
-	return &widget.ButtonImage{
-		Idle:     assets.NineSliceImage(loader.LoadImage(assets.ImgPrevBtnIdle).Data, 54, 14),
-		Hover:    assets.NineSliceImage(loader.LoadImage(assets.ImgPrevBtnHover).Data, 54, 14),
-		Pressed:  assets.NineSliceImage(loader.LoadImage(assets.ImgPrevBtnPressed).Data, 54, 14),
-		Disabled: assets.NineSliceImage(loader.LoadImage(assets.ImgPrevBtnDisabled).Data, 54, 14),
-	}
+var textColour = &widget.ButtonTextColor{
+	Idle:     color.Black,
+	Disabled: color.Black,
 }
 
-func createNextBtnImg(loader *resource.Loader) *widget.ButtonImage {
+var textPadding = widget.Insets{
+	Top:    5,
+	Bottom: 5,
+	Left:   5,
+	Right:  5,
+}
+
+func createBtnImg(loader *resource.Loader) *widget.ButtonImage {
 	return &widget.ButtonImage{
-		Idle:     assets.NineSliceImage(loader.LoadImage(assets.ImgNextBtnIdle).Data, 54, 14),
-		Hover:    assets.NineSliceImage(loader.LoadImage(assets.ImgNextBtnHover).Data, 54, 14),
-		Pressed:  assets.NineSliceImage(loader.LoadImage(assets.ImgNextBtnPressed).Data, 54, 14),
-		Disabled: assets.NineSliceImage(loader.LoadImage(assets.ImgNextBtnDisabled).Data, 54, 14),
+		Idle:     assets.NineSliceImage(loader.LoadImage(assets.ImgBtnIdle).Data, 54, 14),
+		Hover:    assets.NineSliceImage(loader.LoadImage(assets.ImgBtnHover).Data, 54, 14),
+		Pressed:  assets.NineSliceImage(loader.LoadImage(assets.ImgBtnPressed).Data, 54, 14),
+		Disabled: assets.NineSliceImage(loader.LoadImage(assets.ImgBtnDisabled).Data, 54, 14),
 	}
 }
 
@@ -51,31 +55,36 @@ func CreateUI(loader *resource.Loader, callbacks *Callbacks) *GameUI {
 	rootContainer := widget.NewContainer(
 		widget.ContainerOpts.Layout(widget.NewAnchorLayout(widget.AnchorLayoutOpts.Padding(widget.Insets{
 			Bottom: 5,
-			Left:   10,
-			Right:  10,
+			Left:   5,
+			Right:  5,
 		}))),
 	)
 	btnContainer := widget.NewContainer(
-		widget.ContainerOpts.Layout(widget.NewRowLayout(widget.RowLayoutOpts.Spacing(10))),
+		widget.ContainerOpts.Layout(widget.NewRowLayout(widget.RowLayoutOpts.Spacing(2), widget.RowLayoutOpts.Direction(widget.DirectionVertical))),
 		widget.ContainerOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.AnchorLayoutData{
 			VerticalPosition:   widget.AnchorLayoutPositionEnd,
-			HorizontalPosition: widget.AnchorLayoutPositionCenter,
+			HorizontalPosition: widget.AnchorLayoutPositionStart,
 		})),
 	)
 	rootContainer.AddChild(btnContainer)
+	btnImg := createBtnImg(loader)
+	nextBtn := widget.NewButton(
+		widget.ButtonOpts.Image(btnImg),
+		widget.ButtonOpts.Text("Next", loader.LoadFont(assets.FontDefault).Face, textColour),
+		widget.ButtonOpts.TextPadding(textPadding),
+		widget.ButtonOpts.ClickedHandler(callbacks.Next),
+		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{Stretch: true, MaxHeight: 20})),
+	)
+	btnContainer.AddChild(nextBtn)
 	prevBtn := widget.NewButton(
-		widget.ButtonOpts.Image(createPrevBtnImg(loader)),
+		widget.ButtonOpts.Image(btnImg),
+		widget.ButtonOpts.Text("Prev", loader.LoadFont(assets.FontDefault).Face, textColour),
+		widget.ButtonOpts.TextPadding(textPadding),
 		widget.ButtonOpts.ClickedHandler(callbacks.Prev),
 		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{Stretch: true, MaxHeight: 20})),
 	)
 	prevBtn.GetWidget().Disabled = true
 	btnContainer.AddChild(prevBtn)
-	nextBtn := widget.NewButton(
-		widget.ButtonOpts.Image(createNextBtnImg(loader)),
-		widget.ButtonOpts.ClickedHandler(callbacks.Next),
-		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{Stretch: true, MaxHeight: 20})),
-	)
-	btnContainer.AddChild(nextBtn)
 
 	ui := &ebitenui.UI{
 		Container: rootContainer,

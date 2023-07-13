@@ -15,14 +15,10 @@ const (
 	ImgMarkerIdle
 	ImgMarkerSelected
 	ImgMarkerLocked
-	ImgNextBtnIdle
-	ImgNextBtnHover
-	ImgNextBtnPressed
-	ImgNextBtnDisabled
-	ImgPrevBtnIdle
-	ImgPrevBtnHover
-	ImgPrevBtnPressed
-	ImgPrevBtnDisabled
+	ImgBtnIdle
+	ImgBtnHover
+	ImgBtnPressed
+	ImgBtnDisabled
 )
 
 func RegisterImageResources(loader *resource.Loader) {
@@ -33,20 +29,30 @@ func RegisterImageResources(loader *resource.Loader) {
 		ImgMarkerSelected: {Path: "marker-selected.png"},
 		ImgMarkerLocked:   {Path: "marker-locked.png"},
 
-		ImgNextBtnIdle:     {Path: "next-btn-idle.png"},
-		ImgNextBtnHover:    {Path: "next-btn-hover.png"},
-		ImgNextBtnPressed:  {Path: "next-btn-pressed.png"},
-		ImgNextBtnDisabled: {Path: "next-btn-disabled.png"},
-
-		ImgPrevBtnIdle:     {Path: "prev-btn-idle.png"},
-		ImgPrevBtnHover:    {Path: "prev-btn-hover.png"},
-		ImgPrevBtnPressed:  {Path: "prev-btn-pressed.png"},
-		ImgPrevBtnDisabled: {Path: "prev-btn-disabled.png"},
+		ImgBtnIdle:     {Path: "btn-idle.png"},
+		ImgBtnHover:    {Path: "btn-hover.png"},
+		ImgBtnPressed:  {Path: "btn-pressed.png"},
+		ImgBtnDisabled: {Path: "btn-disabled.png"},
 	}
 
 	for id, res := range imageResources {
 		loader.ImageRegistry.Set(id, res)
 		loader.LoadImage(id)
+	}
+}
+
+const (
+	FontNone resource.FontID = iota
+	FontDefault
+)
+
+func RegisterFontResources(loader *resource.Loader) {
+	fontResources := map[resource.FontID]resource.FontInfo{
+		FontDefault: {Path: "fibberish.ttf", Size: 12},
+	}
+	for id, res := range fontResources {
+		loader.FontRegistry.Set(id, res)
+		loader.LoadFont(id)
 	}
 }
 

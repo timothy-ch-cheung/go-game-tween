@@ -58,6 +58,7 @@ func main() {
 	loader.OpenAssetFunc = assets.OpenAssetFunc
 
 	assets.RegisterImageResources(loader)
+	assets.RegisterFontResources(loader)
 
 	cam := ebitenCamera.NewCamera(config.ScreenWidth, config.ScreenHeight, 0, 0, 0, 1)
 
