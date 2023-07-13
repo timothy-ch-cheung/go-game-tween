@@ -49,6 +49,7 @@ func (game *Game) Update() error {
 }
 
 func (game *Game) Draw(screen *ebiten.Image) {
+	game.cam.Surface.Clear()
 	game.gameMap.Draw(screen, game.cam, game.loader)
 	game.cam.Blit(screen)
 	game.gameUI.Draw(screen)
@@ -71,7 +72,7 @@ func main() {
 
 	width, height := gameMap.GetDimensions()
 	cameraController := game.NewCameraController(cam, width, height)
-	cam.SetPosition(cameraController.GetCameraPosition(gameMap.GetCurrentMarker()))
+	cam.SetPosition(cameraController.GetCameraPositionFromMarker(gameMap.GetCurrentMarker()))
 
 	gameUI := game.CreateUI(loader, &game.Callbacks{
 		Prev: func(args *widget.ButtonClickedEventArgs) {

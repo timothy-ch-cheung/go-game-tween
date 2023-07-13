@@ -48,13 +48,17 @@ func NewCameraController(camera *ebitenCamera.Camera, mapWidth float64, mapHeigh
 }
 
 func (cameraController *CameraController) SetCameraPosition(marker *Marker) {
-	cameraController.camera.SetPosition(cameraController.GetCameraPosition(marker))
+	cameraController.camera.SetPosition(cameraController.GetCameraPositionFromMarker(marker))
 }
 
-func (cameraController *CameraController) GetCameraPosition(marker *Marker) (float64, float64) {
-	x := math.Min(math.Max(float64(marker.PosX), cameraController.bounds.xMin), cameraController.bounds.xMax)
-	y := math.Min(math.Max(float64(marker.PosY), cameraController.bounds.yMin), cameraController.bounds.yMax)
+func (cameraController *CameraController) GetCameraPositionFromCoord(targetX float64, targetY float64) (float64, float64) {
+	x := math.Min(math.Max(targetX, cameraController.bounds.xMin), cameraController.bounds.xMax)
+	y := math.Min(math.Max(targetY, cameraController.bounds.yMin), cameraController.bounds.yMax)
 	return x, y
+}
+
+func (cameraController *CameraController) GetCameraPositionFromMarker(marker *Marker) (float64, float64) {
+	return cameraController.GetCameraPositionFromCoord(float64(marker.PosX), float64(marker.PosY))
 }
 
 func (cameraController *CameraController) Update(delta float32) {
@@ -81,7 +85,8 @@ func (cameraController *CameraController) Update(delta float32) {
 }
 
 func (cameraController *CameraController) InitiateMove(targetX float64, targetY float64) {
+	x, y := cameraController.GetCameraPositionFromCoord(targetX, targetY)
 	cameraController.IsCameraMoving = true
-	cameraController.xTween = gween.New(float32(cameraController.camera.X), float32(targetX), moveTime, ease.InOutCubic)
-	cameraController.yTween = gween.New(float32(cameraController.camera.Y), float32(targetY), moveTime, ease.InOutCubic)
+	cameraController.xTween = gween.New(float32(cameraController.camera.X), float32(x), moveTime, ease.InOutCubic)
+	cameraController.yTween = gween.New(float32(cameraController.camera.Y), float32(y), moveTime, ease.InOutCubic)
 }
