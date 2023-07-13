@@ -7,6 +7,7 @@ import (
 	"github.com/timothy-ch-cheung/go-game-tween/config"
 	"github.com/timothy-ch-cheung/go-game-tween/game"
 
+	"github.com/ebitenui/ebitenui"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
 
@@ -17,16 +18,19 @@ import (
 type Game struct {
 	loader  *resource.Loader
 	gameMap *game.GameMap
+	ui      *ebitenui.UI
 	cam     *ebitenCamera.Camera
 }
 
-func (g *Game) Update() error {
+func (game *Game) Update() error {
+	game.ui.Update()
 	return nil
 }
 
 func (game *Game) Draw(screen *ebiten.Image) {
 	game.gameMap.Draw(screen, game.cam, game.loader)
 	game.cam.Blit(screen)
+	game.ui.Draw(screen)
 }
 
 func (game *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -45,9 +49,21 @@ func main() {
 	gameMap := game.NewGameMap(*loader)
 	cam.SetPosition(gameMap.GetInitialPos())
 
+	ui := game.CreateUI(loader, &game.Callbacks{
+		Prev: func() {},
+		Next: func() {},
+	})
+
 	ebiten.SetWindowSize(config.ScreenWidth*4, config.ScreenHeight*4)
 	ebiten.SetWindowTitle("Map Tween Demo")
-	if err := ebiten.RunGame(&Game{loader: loader, gameMap: gameMap, cam: cam}); err != nil {
+
+	game := &Game{
+		loader:  loader,
+		gameMap: gameMap,
+		ui:      ui,
+		cam:     cam,
+	}
+	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
 }

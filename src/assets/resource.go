@@ -15,6 +15,14 @@ const (
 	ImgMarkerIdle
 	ImgMarkerSelected
 	ImgMarkerLocked
+	ImgNextBtnIdle
+	ImgNextBtnHover
+	ImgNextBtnPressed
+	ImgNextBtnDisabled
+	ImgPrevBtnIdle
+	ImgPrevBtnHover
+	ImgPrevBtnPressed
+	ImgPrevBtnDisabled
 )
 
 func RegisterImageResources(loader *resource.Loader) {
@@ -24,6 +32,16 @@ func RegisterImageResources(loader *resource.Loader) {
 		ImgMarkerIdle:     {Path: "marker-idle.png"},
 		ImgMarkerSelected: {Path: "marker-selected.png"},
 		ImgMarkerLocked:   {Path: "marker-locked.png"},
+
+		ImgNextBtnIdle:     {Path: "next-btn-idle.png"},
+		ImgNextBtnHover:    {Path: "next-btn-hover.png"},
+		ImgNextBtnPressed:  {Path: "next-btn-pressed.png"},
+		ImgNextBtnDisabled: {Path: "next-btn-disabled.png"},
+
+		ImgPrevBtnIdle:     {Path: "prev-btn-idle.png"},
+		ImgPrevBtnHover:    {Path: "prev-btn-hover.png"},
+		ImgPrevBtnPressed:  {Path: "prev-btn-pressed.png"},
+		ImgPrevBtnDisabled: {Path: "prev-btn-disabled.png"},
 	}
 
 	for id, res := range imageResources {
