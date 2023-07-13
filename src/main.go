@@ -70,8 +70,10 @@ func main() {
 
 	gameUI := game.CreateUI(loader, &game.Callbacks{
 		Prev: func(args *widget.ButtonClickedEventArgs) {
+			gameMap.CurrentMarker.Value.(*game.Marker).State = game.Idle
 			prevMarkerElement := gameMap.CurrentMarker.Prev()
 			prevMarker := prevMarkerElement.Value.(*game.Marker)
+			prevMarker.State = game.Selected
 			if prevMarkerElement.Prev() == nil {
 				args.Button.GetWidget().Disabled = true
 			}
@@ -79,8 +81,10 @@ func main() {
 			gameMap.CurrentMarker = prevMarkerElement
 		},
 		Next: func(args *widget.ButtonClickedEventArgs) {
+			gameMap.CurrentMarker.Value.(*game.Marker).State = game.Idle
 			nextMarkerElement := gameMap.CurrentMarker.Next()
 			nextMarker := nextMarkerElement.Value.(*game.Marker)
+			nextMarker.State = game.Selected
 			if nextMarkerElement.Next() == nil {
 				args.Button.GetWidget().Disabled = true
 			}
