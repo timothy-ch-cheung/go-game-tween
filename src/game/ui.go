@@ -1,6 +1,8 @@
 package game
 
 import (
+	"container/list"
+
 	"github.com/timothy-ch-cheung/go-game-tween/assets"
 
 	"github.com/ebitenui/ebitenui"
@@ -15,14 +17,16 @@ type Callbacks struct {
 	Prev func(args *widget.ButtonClickedEventArgs)
 }
 
+type Buttons struct {
+	prev *widget.Button
+	next *widget.Button
+}
+
 type GameUI struct {
 	ui               *ebitenui.UI
 	interfaceEnabled bool
 	isCameraMoving   bool
-	prevBtn          *widget.Button
-	prevBtnDisabled  bool
-	nextBtn          *widget.Button
-	nextBtnDisabled  bool
+	buttons          *Buttons
 }
 
 func createPrevBtnImg(loader *resource.Loader) *widget.ButtonImage {
@@ -64,6 +68,7 @@ func CreateUI(loader *resource.Loader, callbacks *Callbacks) *GameUI {
 		widget.ButtonOpts.ClickedHandler(callbacks.Prev),
 		widget.ButtonOpts.WidgetOpts(widget.WidgetOpts.LayoutData(widget.RowLayoutData{Stretch: true, MaxHeight: 20})),
 	)
+	prevBtn.GetWidget().Disabled = true
 	btnContainer.AddChild(prevBtn)
 	nextBtn := widget.NewButton(
 		widget.ButtonOpts.Image(createNextBtnImg(loader)),
@@ -75,16 +80,20 @@ func CreateUI(loader *resource.Loader, callbacks *Callbacks) *GameUI {
 	ui := &ebitenui.UI{
 		Container: rootContainer,
 	}
+
+	buttons := &Buttons{
+		prev: prevBtn,
+		next: nextBtn,
+	}
 	return &GameUI{
 		ui:               ui,
 		interfaceEnabled: true,
 		isCameraMoving:   false,
-		prevBtn:          prevBtn,
-		nextBtn:          nextBtn,
+		buttons:          buttons,
 	}
 }
 
-func (gameUI *GameUI) Update(isCameraMoving bool) {
+func (gameUI *GameUI) Update(isCameraMoving bool, currentMarker *list.Element) {
 	gameUI.ui.Update()
 	if isCameraMoving == gameUI.isCameraMoving {
 		return
@@ -92,13 +101,11 @@ func (gameUI *GameUI) Update(isCameraMoving bool) {
 
 	gameUI.isCameraMoving = isCameraMoving
 	if isCameraMoving {
-		gameUI.prevBtnDisabled = gameUI.prevBtn.GetWidget().Disabled
-		gameUI.prevBtn.GetWidget().Disabled = true
-		gameUI.nextBtnDisabled = gameUI.nextBtn.GetWidget().Disabled
-		gameUI.nextBtn.GetWidget().Disabled = true
+		gameUI.buttons.prev.GetWidget().Disabled = true
+		gameUI.buttons.next.GetWidget().Disabled = true
 	} else {
-		gameUI.prevBtn.GetWidget().Disabled = gameUI.prevBtnDisabled
-		gameUI.nextBtn.GetWidget().Disabled = gameUI.nextBtnDisabled
+		gameUI.buttons.prev.GetWidget().Disabled = currentMarker.Prev() == nil
+		gameUI.buttons.next.GetWidget().Disabled = currentMarker.Next() == nil
 	}
 }
 
@@ -108,10 +115,4 @@ func (gameUI *GameUI) Draw(screen *ebiten.Image) {
 
 func (gameUI *GameUI) IsInterfaceEnabled() bool {
 	return gameUI.interfaceEnabled
-}
-
-func (gameUI *GameUI) SetInterfaceEnabled(enabled bool) {
-	gameUI.interfaceEnabled = enabled
-	gameUI.prevBtn.GetWidget().Disabled = !enabled
-	gameUI.nextBtn.GetWidget().Disabled = !enabled
 }

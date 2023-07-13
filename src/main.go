@@ -37,7 +37,7 @@ func (game *Game) Update() error {
 	currentTime = newTime
 
 	game.cameraController.Update(float32(delta))
-	game.gameUI.Update(game.cameraController.IsCameraMoving)
+	game.gameUI.Update(game.cameraController.IsCameraMoving, game.gameMap.CurrentMarker)
 	return nil
 }
 
