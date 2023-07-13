@@ -35,12 +35,16 @@ func NewGameMap(loader resource.Loader) *GameMap {
 	markers := list.New()
 	markers.PushBack(newMarker(420, 420, Selected))
 	markers.PushBack(newMarker(400, 415, Locked))
-	markers.PushBack(newMarker(375, 425, Locked))
 	markers.PushBack(newMarker(340, 405, Locked))
 	markers.PushBack(newMarker(320, 380, Locked))
-	markers.PushBack(newMarker(330, 350, Locked))
 	markers.PushBack(newMarker(370, 320, Locked))
 	markers.PushBack(newMarker(250, 260, Locked))
+	markers.PushBack(newMarker(200, 360, Locked))
+	markers.PushBack(newMarker(190, 200, Locked))
+	markers.PushBack(newMarker(150, 170, Locked))
+	markers.PushBack(newMarker(250, 50, Locked))
+	markers.PushBack(newMarker(310, 40, Locked))
+	markers.PushBack(newMarker(400, 60, Locked))
 
 	return &GameMap{
 		width:         width,
