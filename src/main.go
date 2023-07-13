@@ -36,15 +36,8 @@ func (game *Game) Update() error {
 	delta = float32(newTime.UnixMicro() - currentTime.UnixMicro())
 	currentTime = newTime
 
-	if game.gameUI.IsInterfaceEnabled() && game.cameraController.IsCameraMoving {
-		game.gameUI.SetInterfaceEnabled(false)
-	}
-	if !game.gameUI.IsInterfaceEnabled() && !game.cameraController.IsCameraMoving {
-		game.gameUI.SetInterfaceEnabled(true)
-	}
-
 	game.cameraController.Update(float32(delta))
-	game.gameUI.Update()
+	game.gameUI.Update(game.cameraController.IsCameraMoving)
 	return nil
 }
 
@@ -76,14 +69,22 @@ func main() {
 
 	gameUI := game.CreateUI(loader, &game.Callbacks{
 		Prev: func(args *widget.ButtonClickedEventArgs) {
-			prevMarker := gameMap.GetPrevMarker()
+			prevMarkerElement := gameMap.CurrentMarker.Prev()
+			prevMarker := prevMarkerElement.Value.(*game.Marker)
+			if prevMarkerElement.Prev() == nil {
+				args.Button.GetWidget().Disabled = true
+			}
 			cameraController.InitiateMove(float64(prevMarker.PosX), float64(prevMarker.PosY))
-			gameMap.CurrentMarker = gameMap.CurrentMarker.Prev()
+			gameMap.CurrentMarker = prevMarkerElement
 		},
 		Next: func(args *widget.ButtonClickedEventArgs) {
-			nextMarker := gameMap.GetNextMarker()
+			nextMarkerElement := gameMap.CurrentMarker.Next()
+			nextMarker := nextMarkerElement.Value.(*game.Marker)
+			if nextMarkerElement.Next() == nil {
+				args.Button.GetWidget().Disabled = true
+			}
 			cameraController.InitiateMove(float64(nextMarker.PosX), float64(nextMarker.PosY))
-			gameMap.CurrentMarker = gameMap.CurrentMarker.Next()
+			gameMap.CurrentMarker = nextMarkerElement
 		},
 	})
 

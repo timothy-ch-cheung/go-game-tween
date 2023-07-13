@@ -18,8 +18,11 @@ type Callbacks struct {
 type GameUI struct {
 	ui               *ebitenui.UI
 	interfaceEnabled bool
+	isCameraMoving   bool
 	prevBtn          *widget.Button
+	prevBtnDisabled  bool
 	nextBtn          *widget.Button
+	nextBtnDisabled  bool
 }
 
 func createPrevBtnImg(loader *resource.Loader) *widget.ButtonImage {
@@ -75,13 +78,28 @@ func CreateUI(loader *resource.Loader, callbacks *Callbacks) *GameUI {
 	return &GameUI{
 		ui:               ui,
 		interfaceEnabled: true,
+		isCameraMoving:   false,
 		prevBtn:          prevBtn,
 		nextBtn:          nextBtn,
 	}
 }
 
-func (gameUI *GameUI) Update() {
+func (gameUI *GameUI) Update(isCameraMoving bool) {
 	gameUI.ui.Update()
+	if isCameraMoving == gameUI.isCameraMoving {
+		return
+	}
+
+	gameUI.isCameraMoving = isCameraMoving
+	if isCameraMoving {
+		gameUI.prevBtnDisabled = gameUI.prevBtn.GetWidget().Disabled
+		gameUI.prevBtn.GetWidget().Disabled = true
+		gameUI.nextBtnDisabled = gameUI.nextBtn.GetWidget().Disabled
+		gameUI.nextBtn.GetWidget().Disabled = true
+	} else {
+		gameUI.prevBtn.GetWidget().Disabled = gameUI.prevBtnDisabled
+		gameUI.nextBtn.GetWidget().Disabled = gameUI.nextBtnDisabled
+	}
 }
 
 func (gameUI *GameUI) Draw(screen *ebiten.Image) {
