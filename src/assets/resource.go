@@ -12,6 +12,7 @@ import (
 const (
 	ImgNone resource.ImageID = iota
 	ImgMap
+	ImgMiniMap
 	ImgMarkerIdle
 	ImgMarkerSelected
 	ImgMarkerLocked
@@ -23,7 +24,8 @@ const (
 
 func RegisterImageResources(loader *resource.Loader) {
 	imageResources := map[resource.ImageID]resource.ImageInfo{
-		ImgMap: {Path: "map.png"},
+		ImgMap:     {Path: "map.png"},
+		ImgMiniMap: {Path: "mini-map.png"},
 
 		ImgMarkerIdle:     {Path: "marker-idle.png"},
 		ImgMarkerSelected: {Path: "marker-selected.png"},
