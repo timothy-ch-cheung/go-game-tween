@@ -2,10 +2,12 @@ package game
 
 import (
 	"container/list"
+	"strconv"
 
 	"github.com/timothy-ch-cheung/go-game-tween/assets"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text"
 	ebitenCamera "github.com/melonfunction/ebiten-camera"
 	resource "github.com/quasilyte/ebitengine-resource"
 )
@@ -14,16 +16,36 @@ type GameMap struct {
 	width  float64
 	height float64
 
-	markers       *list.List
+	Markers       *list.List
 	CurrentMarker *list.Element
+}
+
+func centerText(text string, options *ebiten.DrawImageOptions) {
+	switch len(text) {
+	case 1:
+		options.GeoM.Translate(1, -2)
+	case 2:
+		options.GeoM.Translate(-2, -2)
+	}
 }
 
 func (gameMap *GameMap) Draw(screen *ebiten.Image, cam *ebitenCamera.Camera, loader *resource.Loader) {
 	op := &ebiten.DrawImageOptions{}
 	cam.Surface.DrawImage(loader.LoadImage(assets.ImgMap).Data, cam.GetTranslation(op, 0, 0))
 
-	for marker := gameMap.markers.Front(); marker != nil; marker = marker.Next() {
-		marker.Value.(*Marker).Draw(screen, cam, loader)
+	for i, markerElement := 1, gameMap.Markers.Front(); markerElement != nil; i, markerElement = i+1, markerElement.Next() {
+		textOp := &ebiten.DrawImageOptions{}
+		marker := markerElement.Value.(*Marker)
+		num := strconv.Itoa(i)
+		centerText(num, textOp)
+
+		marker.Draw(screen, cam, loader)
+		text.DrawWithOptions(
+			cam.Surface,
+			num,
+			loader.LoadFont(assets.FontSmall).Face,
+			cam.GetTranslation(textOp, float64(marker.PosX), float64(marker.PosY)),
+		)
 	}
 }
 
@@ -49,7 +71,7 @@ func NewGameMap(loader resource.Loader) *GameMap {
 	return &GameMap{
 		width:         width,
 		height:        height,
-		markers:       markers,
+		Markers:       markers,
 		CurrentMarker: markers.Front(),
 	}
 }

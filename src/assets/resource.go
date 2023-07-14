@@ -44,11 +44,13 @@ func RegisterImageResources(loader *resource.Loader) {
 const (
 	FontNone resource.FontID = iota
 	FontDefault
+	FontSmall
 )
 
 func RegisterFontResources(loader *resource.Loader) {
 	fontResources := map[resource.FontID]resource.FontInfo{
 		FontDefault: {Path: "fibberish.ttf", Size: 12},
+		FontSmall:   {Path: "PrintChar21.ttf", Size: 6},
 	}
 	for id, res := range fontResources {
 		loader.FontRegistry.Set(id, res)
