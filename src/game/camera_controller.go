@@ -84,8 +84,17 @@ func (cameraController *CameraController) Update(delta float32) {
 	}
 }
 
+const float64EqualityThreshold = 1e-9
+
+func almostEqual(a, b float64) bool {
+	return math.Abs(a-b) <= float64EqualityThreshold
+}
+
 func (cameraController *CameraController) InitiateMove(targetX float64, targetY float64) {
 	x, y := cameraController.GetCameraPositionFromCoord(targetX, targetY)
+	if almostEqual(x, cameraController.camera.X) && almostEqual(y, cameraController.camera.Y) {
+		return
+	}
 	cameraController.IsCameraMoving = true
 	cameraController.xTween = gween.New(float32(cameraController.camera.X), float32(x), moveTime, ease.InOutCubic)
 	cameraController.yTween = gween.New(float32(cameraController.camera.Y), float32(y), moveTime, ease.InOutCubic)
