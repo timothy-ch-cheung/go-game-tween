@@ -95,9 +95,7 @@ func main() {
 		},
 	})
 
-	miniMap := &game.MiniMap{
-		Cam: cam,
-	}
+	miniMap := game.NewMiniMap(width, height, cam, loader)
 
 	ebiten.SetWindowSize(config.ScreenWidth*scale, config.ScreenHeight*scale)
 	ebiten.SetWindowTitle("Map Tween Demo")
