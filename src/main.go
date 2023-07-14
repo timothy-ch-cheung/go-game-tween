@@ -29,6 +29,7 @@ type Game struct {
 	gameUI           *game.GameUI
 	cam              *ebitenCamera.Camera
 	cameraController *game.CameraController
+	miniMap          *game.MiniMap
 }
 
 func (game *Game) Update() error {
@@ -46,6 +47,7 @@ func (game *Game) Draw(screen *ebiten.Image) {
 	game.gameMap.Draw(screen, game.cam, game.loader)
 	game.cam.Blit(screen)
 	game.gameUI.Draw(screen)
+	game.miniMap.Draw(screen, game.loader)
 }
 
 func (game *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -93,6 +95,8 @@ func main() {
 		},
 	})
 
+	miniMap := game.NewMiniMap(width, height, cam, loader)
+
 	ebiten.SetWindowSize(config.ScreenWidth*scale, config.ScreenHeight*scale)
 	ebiten.SetWindowTitle("Map Tween Demo")
 
@@ -102,6 +106,7 @@ func main() {
 		gameUI:           gameUI,
 		cam:              cam,
 		cameraController: cameraController,
+		miniMap:          miniMap,
 	}
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
