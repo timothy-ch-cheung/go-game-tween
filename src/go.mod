@@ -1,6 +1,6 @@
 module github.com/timothy-ch-cheung/go-game-tween
 
-go 1.19
+go 1.22
 
 require github.com/hajimehoshi/ebiten/v2 v2.5.5
 
